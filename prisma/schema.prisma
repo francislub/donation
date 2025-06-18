@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  password  String
+  name      String
+  role      AdminRole @default(ADMIN)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Activity logs
+  activities ActivityLog[]
+}
+
+model Child {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  age         Int
+  class       String?
+  bio         String?
+  location    String
+  needs       String[]
+  photo       String?
+  isActive    Boolean  @default(true)
+  isSponsored Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Sponsorship relationship
+  sponsorships Sponsorship[]
+}
+
+model Beneficiary {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  contact     String?
+  details     String?
+  photos      String[]
+  helpType    String
+  location    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Sponsor {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  email       String   @unique
+  phone       String?
+  address     String?
+  isActive    Boolean  @default(true)
+  isBlacklisted Boolean @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relationships
+  donations    Donation[]
+  sponsorships Sponsorship[]
+}
+
+model Donation {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  amount      Float
+  method      PaymentMethod
+  status      DonationStatus @default(PENDING)
+  date        DateTime      @default(now())
+  description String?
+  reference   String?
+  
+  // Relationships
+  sponsor     Sponsor       @relation(fields: [sponsorId], references: [id])
+  sponsorId   String        @db.ObjectId
+  
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Sponsorship {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  startDate DateTime @default(now())
+  endDate   DateTime?
+  amount    Float
+  isActive  Boolean  @default(true)
+  
+  // Relationships
+  child     Child    @relation(fields: [childId], references: [id])
+  childId   String   @db.ObjectId
+  sponsor   Sponsor  @relation(fields: [sponsorId], references: [id])
+  sponsorId String   @db.ObjectId
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ActivityLog {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  action    String
+  details   String?
+  timestamp DateTime @default(now())
+  
+  // Relationships
+  admin     Admin    @relation(fields: [adminId], references: [id])
+  adminId   String   @db.ObjectId
+}
+
+model Settings {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  key         String @unique
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER
+  MOBILE_MONEY
+  PAYPAL
+  STRIPE
+  CASH
+}
+
+enum DonationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  COMPLETED
+}
