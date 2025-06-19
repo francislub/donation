@@ -7,18 +7,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Admin {
+model User {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   email     String   @unique
   password  String
   name      String
-  role      AdminRole @default(ADMIN)
+  role      UserRole @default(ADMIN)
+  avatar    String?  // Profile image URL
+  phone     String?
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
   // Activity logs
   activities ActivityLog[]
+}
+
+model TeamMember {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  position    String   // CEO, Director, Manager, Team Leader, etc.
+  department  String?  // Finance, Operations, Programs, etc.
+  email       String?
+  phone       String?
+  bio         String?
+  avatar      String?  // Profile image URL
+  startDate   DateTime @default(now())
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Child {
@@ -29,7 +46,8 @@ model Child {
   bio         String?
   location    String
   needs       String[]
-  photo       String?
+  photo       String?  // Profile image URL
+  gallery     String[] // Additional photos
   isActive    Boolean  @default(true)
   isSponsored Boolean  @default(false)
   createdAt   DateTime @default(now())
@@ -44,7 +62,7 @@ model Beneficiary {
   name        String
   contact     String?
   details     String?
-  photos      String[]
+  photos      String[] // Multiple photos
   helpType    String
   location    String?
   isActive    Boolean  @default(true)
@@ -58,6 +76,7 @@ model Sponsor {
   email       String   @unique
   phone       String?
   address     String?
+  avatar      String?  // Profile image URL
   isActive    Boolean  @default(true)
   isBlacklisted Boolean @default(false)
   createdAt   DateTime @default(now())
@@ -109,8 +128,8 @@ model ActivityLog {
   timestamp DateTime @default(now())
   
   // Relationships
-  admin     Admin    @relation(fields: [adminId], references: [id])
-  adminId   String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @db.ObjectId
 }
 
 model Settings {
@@ -121,7 +140,7 @@ model Settings {
   updatedAt   DateTime @updatedAt
 }
 
-enum AdminRole {
+enum UserRole {
   SUPER_ADMIN
   ADMIN
   EDITOR

@@ -40,7 +40,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     }
 
     const data = await request.json()
-    const { name, age, class: childClass, bio, location, photo, needs, isActive } = data
+    const { name, age, class: childClass, bio, location, photo, gallery, needs, isActive } = data
 
     const child = await prisma.child.update({
       where: { id: params.id },
@@ -51,6 +51,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         bio,
         location,
         photo,
+        gallery: gallery || [],
         needs: needs || [],
         isActive,
       },

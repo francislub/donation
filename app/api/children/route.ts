@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await request.json()
-    const { name, age, class: childClass, bio, location, photo, needs } = data
+    const { name, age, class: childClass, bio, location, photo, gallery, needs } = data
 
     const child = await prisma.child.create({
       data: {
@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
         bio,
         location,
         photo,
+        gallery: gallery || [],
         needs: needs || [],
       },
     })

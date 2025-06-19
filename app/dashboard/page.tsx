@@ -1,10 +1,8 @@
 import { prisma } from "@/lib/prisma"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Users, Baby, Heart, DollarSign, TrendingUp, AlertCircle } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell } from "recharts"
+import { DashboardCharts } from "@/components/dashboard-charts"
 
 async function getDashboardData() {
   const [
@@ -137,109 +135,12 @@ export default async function DashboardPage() {
       </div>
 
       {/* Charts Row */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {/* Sponsorship Overview */}
-        <Card className="col-span-1">
-          <CardHeader>
-            <CardTitle>Sponsorship Overview</CardTitle>
-            <CardDescription>Children sponsorship status</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer
-              config={{
-                sponsored: { label: "Sponsored", color: "#10b981" },
-                unsponsored: { label: "Awaiting", color: "#f59e0b" },
-              }}
-              className="h-[200px]"
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={40}
-                    outerRadius={80}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                </PieChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-            <div className="mt-4">
-              <div className="flex items-center justify-between text-sm">
-                <span>Sponsorship Rate</span>
-                <span className="font-medium">{sponsorshipRate.toFixed(1)}%</span>
-              </div>
-              <Progress value={sponsorshipRate} className="mt-2" />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Donation Methods */}
-        <Card className="col-span-1">
-          <CardHeader>
-            <CardTitle>Donation Methods</CardTitle>
-            <CardDescription>Breakdown by payment method</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer
-              config={{
-                amount: { label: "Amount", color: "#3b82f6" },
-              }}
-              className="h-[200px]"
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={donationMethodData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="method" />
-                  <YAxis />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="amount" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-
-        {/* Quick Stats */}
-        <Card className="col-span-1">
-          <CardHeader>
-            <CardTitle>Quick Stats</CardTitle>
-            <CardDescription>Key performance indicators</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <TrendingUp className="h-4 w-4 text-green-500" />
-                <span className="text-sm">Avg. Donation</span>
-              </div>
-              <span className="font-semibold">
-                ${data.donations._count > 0 ? Math.round((data.donations._sum.amount || 0) / data.donations._count) : 0}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Heart className="h-4 w-4 text-red-500" />
-                <span className="text-sm">Active Sponsorships</span>
-              </div>
-              <span className="font-semibold">{data.sponsorshipStats.find((s) => s.isActive)?._count || 0}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <AlertCircle className="h-4 w-4 text-orange-500" />
-                <span className="text-sm">Needs Attention</span>
-              </div>
-              <span className="font-semibold">{data.children.unsponsored}</span>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <DashboardCharts
+        pieData={pieData}
+        donationMethodData={donationMethodData}
+        sponsorshipRate={sponsorshipRate}
+        sponsorshipStats={data.sponsorshipStats}
+      />
 
       {/* Recent Activity */}
       <div className="grid gap-4 md:grid-cols-2">

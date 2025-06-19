@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { X } from "lucide-react"
+import { ImageUpload } from "@/components/image-upload"
 
 export default function AddChildPage() {
   const [formData, setFormData] = useState({
@@ -21,6 +22,7 @@ export default function AddChildPage() {
     bio: "",
     location: "",
     photo: "",
+    gallery: [] as string[],
     needs: [] as string[],
   })
   const [currentNeed, setCurrentNeed] = useState("")
@@ -59,6 +61,7 @@ export default function AddChildPage() {
         body: JSON.stringify({
           ...formData,
           age: Number.parseInt(formData.age),
+          gallery: formData.gallery,
         }),
       })
 
@@ -131,13 +134,20 @@ export default function AddChildPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="photo">Photo URL</Label>
-              <Input
-                id="photo"
-                type="url"
+              <Label>Profile Photo</Label>
+              <ImageUpload
                 value={formData.photo}
-                onChange={(e) => setFormData({ ...formData, photo: e.target.value })}
-                placeholder="https://example.com/photo.jpg"
+                onChange={(url) => setFormData({ ...formData, photo: url })}
+                onRemove={() => setFormData({ ...formData, photo: "" })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Additional Photos</Label>
+              <ImageUpload
+                multiple
+                values={formData.gallery}
+                onMultipleChange={(urls) => setFormData({ ...formData, gallery: urls })}
               />
             </div>
 

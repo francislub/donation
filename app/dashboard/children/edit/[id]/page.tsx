@@ -13,6 +13,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
 import { X } from "lucide-react"
+import { ImageUpload } from "@/components/image-upload"
 
 interface Child {
   id: string
@@ -22,6 +23,7 @@ interface Child {
   bio: string | null
   location: string
   photo: string | null
+  gallery: string[] | null
   needs: string[]
   isActive: boolean
   isSponsored: boolean
@@ -36,6 +38,7 @@ export default function EditChildPage({ params }: { params: { id: string } }) {
     bio: "",
     location: "",
     photo: "",
+    gallery: [] as string[],
     needs: [] as string[],
     isActive: true,
   })
@@ -62,6 +65,7 @@ export default function EditChildPage({ params }: { params: { id: string } }) {
           bio: childData.bio || "",
           location: childData.location,
           photo: childData.photo || "",
+          gallery: childData.gallery || [],
           needs: childData.needs || [],
           isActive: childData.isActive,
         })
@@ -106,6 +110,7 @@ export default function EditChildPage({ params }: { params: { id: string } }) {
         body: JSON.stringify({
           ...formData,
           age: Number.parseInt(formData.age),
+          gallery: formData.gallery,
         }),
       })
 
@@ -204,6 +209,24 @@ export default function EditChildPage({ params }: { params: { id: string } }) {
                 value={formData.photo}
                 onChange={(e) => setFormData({ ...formData, photo: e.target.value })}
                 placeholder="https://example.com/photo.jpg"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Profile Photo</Label>
+              <ImageUpload
+                value={formData.photo}
+                onChange={(url) => setFormData({ ...formData, photo: url })}
+                onRemove={() => setFormData({ ...formData, photo: "" })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Additional Photos</Label>
+              <ImageUpload
+                multiple
+                values={formData.gallery}
+                onMultipleChange={(urls) => setFormData({ ...formData, gallery: urls })}
               />
             </div>
 
