@@ -13,33 +13,52 @@ export async function GET() {
     // Get counts for navigation badges
     const [childrenCount, beneficiariesCount, sponsorsCount, teamCount, donationsCount, usersCount] = await Promise.all(
       [
-        prisma.child.count(),
-        prisma.beneficiary.count(),
-        prisma.sponsor.count(),
-        prisma.teamMember.count(),
-        prisma.donation.count(),
-        prisma.user.count(),
+        prisma.child.count().catch(() => 0),
+        prisma.beneficiary.count().catch(() => 0),
+        prisma.sponsor.count().catch(() => 0),
+        prisma.teamMember.count().catch(() => 0),
+        prisma.donation.count().catch(() => 0),
+        prisma.user.count().catch(() => 0),
       ],
     )
 
-    // Get stats for quick stats section
+    // Get stats for quick stats section with error handling
     const [sponsorshipStats, donationStats, recentActivities] = await Promise.all([
-      prisma.sponsorship.groupBy({
-        by: ["isActive"],
-        _count: true,
-      }),
-      prisma.donation.groupBy({
-        by: ["status"],
-        _count: true,
-      }),
-      prisma.activityLog.findMany({
-        take: 3,
-        orderBy: { timestamp: "desc" },
-        include: { user: true },
-      }),
+      prisma.sponsorship
+        .groupBy({
+          by: ["isActive"],
+          _count: true,
+        })
+        .catch(() => []),
+      prisma.donation
+        .groupBy({
+          by: ["status"],
+          _count: true,
+        })
+        .catch(() => []),
+      // Fixed Prisma query - using proper syntax for filtering null values
+      prisma.activityLog
+        .findMany({
+          take: 3,
+          orderBy: { timestamp: "desc" },
+          where: {
+            AND: [{ userId: { not: null } }, { user: { isNot: null } }],
+          },
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        })
+        .catch(() => []),
     ])
 
     const activeSponsors = sponsorshipStats.find((s) => s.isActive)?._count || 0
+    const inactiveSponsors = sponsorshipStats.find((s) => !s.isActive)?._count || 0
     const pendingDonations = donationStats.find((d) => d.status === "PENDING")?._count || 0
 
     // Calculate monthly goal progress
@@ -47,16 +66,18 @@ export async function GET() {
     const currentYear = new Date().getFullYear()
     const monthlyTarget = 10000
 
-    const monthlyDonations = await prisma.donation.aggregate({
-      where: {
-        date: {
-          gte: new Date(currentYear, currentMonth, 1),
-          lt: new Date(currentYear, currentMonth + 1, 1),
+    const monthlyDonations = await prisma.donation
+      .aggregate({
+        where: {
+          date: {
+            gte: new Date(currentYear, currentMonth, 1),
+            lt: new Date(currentYear, currentMonth + 1, 1),
+          },
+          status: "COMPLETED",
         },
-        status: "COMPLETED",
-      },
-      _sum: { amount: true },
-    })
+        _sum: { amount: true },
+      })
+      .catch(() => ({ _sum: { amount: 0 } }))
 
     const monthlyGoal = Math.min(((monthlyDonations._sum.amount || 0) / monthlyTarget) * 100, 100)
 
@@ -64,18 +85,21 @@ export async function GET() {
     const oneWeekAgo = new Date()
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
 
-    const newChildrenCount = await prisma.child.count({
-      where: {
-        createdAt: {
-          gte: oneWeekAgo,
+    const newChildrenCount = await prisma.child
+      .count({
+        where: {
+          createdAt: {
+            gte: oneWeekAgo,
+          },
         },
-      },
-    })
+      })
+      .catch(() => 0)
 
     const recentActivity = recentActivities.map((activity) => ({
       action: activity.action,
       time: getTimeAgo(activity.timestamp),
       color: getActivityColor(activity.action),
+      user: activity.user?.name || "Unknown User",
     }))
 
     return NextResponse.json({
@@ -90,6 +114,7 @@ export async function GET() {
       stats: {
         monthlyGoal: Math.round(monthlyGoal),
         activeSponsors,
+        inactiveSponsors,
         pendingDonations,
         newChildren: newChildrenCount,
       },
@@ -97,7 +122,25 @@ export async function GET() {
     })
   } catch (error) {
     console.error("Error fetching sidebar data:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+    // Return default data instead of error to prevent UI crashes
+    return NextResponse.json({
+      counts: {
+        children: 0,
+        beneficiaries: 0,
+        sponsors: 0,
+        team: 0,
+        donations: 0,
+        users: 0,
+      },
+      stats: {
+        monthlyGoal: 0,
+        activeSponsors: 0,
+        inactiveSponsors: 0,
+        pendingDonations: 0,
+        newChildren: 0,
+      },
+      recentActivity: [],
+    })
   }
 }
 
@@ -107,8 +150,9 @@ function getTimeAgo(date: Date): string {
 
   if (diffInMinutes < 1) return "Just now"
   if (diffInMinutes < 60) return `${diffInMinutes} min ago`
-  if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)} hour ago`
-  return `${Math.floor(diffInMinutes / 1440)} day ago`
+  if (diffInMinutes < 1440)
+    return `${Math.floor(diffInMinutes / 60)} hour${Math.floor(diffInMinutes / 60) > 1 ? "s" : ""} ago`
+  return `${Math.floor(diffInMinutes / 1440)} day${Math.floor(diffInMinutes / 1440) > 1 ? "s" : ""} ago`
 }
 
 function getActivityColor(action: string): string {
