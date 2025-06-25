@@ -1,30 +1,26 @@
-"use client"
-
 import { Suspense } from "react"
 import { ChildrenHero } from "@/components/website/children/children-hero"
-import { ChildrenGrid } from "@/components/website/children/children-grid"
 import { ChildrenStats } from "@/components/website/children/children-stats"
+import { ChildrenGrid } from "@/components/website/children/children-grid"
+import { CallToAction } from "@/components/website/call-to-action"
 
-function ChildrenPageContent() {
-  return (
-    <div className="pt-20">
-      <ChildrenHero />
-      <ChildrenStats />
-      <ChildrenGrid />
-    </div>
-  )
+export const metadata = {
+  title: "Children - Hope Foundation",
+  description:
+    "Meet the children who need your support. Sponsor a child today and transform their future through education and care.",
 }
 
 export default function ChildrenPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="pt-20 min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-pink-600"></div>
-        </div>
-      }
-    >
-      <ChildrenPageContent />
-    </Suspense>
+    <div className="min-h-screen">
+      <ChildrenHero />
+      <Suspense fallback={<div className="py-20 text-center">Loading statistics...</div>}>
+        <ChildrenStats />
+      </Suspense>
+      <Suspense fallback={<div className="py-20 text-center">Loading children...</div>}>
+        <ChildrenGrid />
+      </Suspense>
+      <CallToAction />
+    </div>
   )
 }
