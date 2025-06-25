@@ -13,7 +13,6 @@ export default function HomePage() {
       <ImpactStats />
       <FeaturedChildren />
       <HowItWorks />
-      {/* <Testimonials /> */}
       <CallToAction />
       <Newsletter />
     </>

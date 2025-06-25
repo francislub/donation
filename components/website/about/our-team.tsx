@@ -1,65 +1,85 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import { Linkedin, Twitter, Mail } from "lucide-react"
+import { Mail, Loader2 } from "lucide-react"
 import Image from "next/image"
 
-export function OurTeam() {
-  const leadership = [
-    {
-      name: "Sarah Johnson",
-      role: "Founder & CEO",
-      bio: "Former UN humanitarian coordinator with 15+ years of experience in international development.",
-      image: "/placeholder.svg?height=300&width=300",
-      social: {
-        linkedin: "#",
-        twitter: "#",
-        email: "sarah@charity.org",
-      },
-    },
-    {
-      name: "Dr. Michael Chen",
-      role: "Director of Programs",
-      bio: "Pediatrician and public health expert specializing in community health initiatives.",
-      image: "/placeholder.svg?height=300&width=300",
-      social: {
-        linkedin: "#",
-        twitter: "#",
-        email: "michael@charity.org",
-      },
-    },
-    {
-      name: "Maria Rodriguez",
-      role: "Head of Operations",
-      bio: "Operations specialist with expertise in scaling humanitarian programs across multiple countries.",
-      image: "/placeholder.svg?height=300&width=300",
-      social: {
-        linkedin: "#",
-        twitter: "#",
-        email: "maria@charity.org",
-      },
-    },
-    {
-      name: "James Wilson",
-      role: "Director of Partnerships",
-      bio: "Former corporate executive focused on building strategic partnerships and sustainable funding.",
-      image: "/placeholder.svg?height=300&width=300",
-      social: {
-        linkedin: "#",
-        twitter: "#",
-        email: "james@charity.org",
-      },
-    },
-  ]
+interface TeamMember {
+  id: string
+  name: string
+  position: string
+  department?: string
+  email?: string
+  phone?: string
+  bio?: string
+  avatar?: string
+  startDate: string
+  isActive: boolean
+}
 
-  const boardMembers = [
-    { name: "Dr. Amara Okafor", role: "Board Chair", expertise: "International Development" },
-    { name: "Robert Kim", role: "Treasurer", expertise: "Financial Management" },
-    { name: "Lisa Thompson", role: "Secretary", expertise: "Legal Affairs" },
-    { name: "Ahmed Hassan", role: "Board Member", expertise: "Education Policy" },
-    { name: "Jennifer Davis", role: "Board Member", expertise: "Healthcare Systems" },
-    { name: "Carlos Mendez", role: "Board Member", expertise: "Community Development" },
-  ]
+export function OurTeam() {
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetchTeamMembers()
+  }, [])
+
+  const fetchTeamMembers = async () => {
+    try {
+      const response = await fetch("/api/team-members/public")
+      if (!response.ok) {
+        throw new Error("Failed to fetch team members")
+      }
+      const data = await response.json()
+      setTeamMembers(data)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-center items-center min-h-[400px]">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+            <span className="ml-2 text-lg text-gray-600">Loading team members...</span>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  if (error) {
+    return (
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <p className="text-red-600 text-lg">Error loading team: {error}</p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  const leadership = teamMembers.filter(
+    (member) =>
+      member.position.toLowerCase().includes("ceo") ||
+      member.position.toLowerCase().includes("director") ||
+      member.position.toLowerCase().includes("founder"),
+  )
+
+  const otherMembers = teamMembers.filter(
+    (member) =>
+      !member.position.toLowerCase().includes("ceo") &&
+      !member.position.toLowerCase().includes("director") &&
+      !member.position.toLowerCase().includes("founder"),
+  )
 
   return (
     <section className="py-20 bg-white">
@@ -78,89 +98,97 @@ export function OurTeam() {
         </motion.div>
 
         {/* Leadership Team */}
-        <div className="mb-20">
-          <motion.h3
-            initial={{ opacity: 0, y: 20 }}
+        {leadership.length > 0 && (
+          <div className="mb-20">
+            <motion.h3
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="text-3xl font-bold text-center text-gray-900 mb-12"
+            >
+              Leadership Team
+            </motion.h3>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {leadership.map((member, index) => (
+                <motion.div
+                  key={member.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className="group"
+                >
+                  <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 text-center h-full">
+                    <div className="relative w-32 h-32 mx-auto mb-6">
+                      <Image
+                        src={member.avatar || "/placeholder.svg?height=128&width=128"}
+                        alt={member.name}
+                        fill
+                        className="rounded-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                    <h4 className="text-xl font-bold text-gray-900 mb-2">{member.name}</h4>
+                    <p className="text-blue-600 font-semibold mb-2">{member.position}</p>
+                    {member.department && <p className="text-gray-500 text-sm mb-4">{member.department}</p>}
+                    {member.bio && <p className="text-gray-600 text-sm leading-relaxed mb-6">{member.bio}</p>}
+
+                    <div className="flex justify-center space-x-3">
+                      {member.email && (
+                        <a
+                          href={`mailto:${member.email}`}
+                          className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors duration-300"
+                        >
+                          <Mail className="w-5 h-5 text-gray-600" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Other Team Members */}
+        {otherMembers.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="text-3xl font-bold text-center text-gray-900 mb-12"
+            transition={{ duration: 0.8 }}
+            className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-3xl p-12"
           >
-            Leadership Team
-          </motion.h3>
+            <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">Our Team</h3>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {leadership.map((member, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="group"
-              >
-                <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 text-center h-full">
-                  <div className="relative w-32 h-32 mx-auto mb-6">
-                    <Image
-                      src={member.image || "/placeholder.svg"}
-                      alt={member.name}
-                      fill
-                      className="rounded-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {otherMembers.map((member, index) => (
+                <motion.div
+                  key={member.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-300"
+                >
+                  <div className="flex items-center space-x-4">
+                    <div className="relative w-16 h-16 flex-shrink-0">
+                      <Image
+                        src={member.avatar || "/placeholder.svg?height=64&width=64"}
+                        alt={member.name}
+                        fill
+                        className="rounded-full object-cover"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-lg font-bold text-gray-900 mb-1">{member.name}</h4>
+                      <p className="text-blue-600 font-semibold text-sm mb-1">{member.position}</p>
+                      {member.department && <p className="text-gray-500 text-xs">{member.department}</p>}
+                    </div>
                   </div>
-                  <h4 className="text-xl font-bold text-gray-900 mb-2">{member.name}</h4>
-                  <p className="text-blue-600 font-semibold mb-4">{member.role}</p>
-                  <p className="text-gray-600 text-sm leading-relaxed mb-6">{member.bio}</p>
-
-                  <div className="flex justify-center space-x-3">
-                    <a
-                      href={member.social.linkedin}
-                      className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center hover:bg-blue-200 transition-colors duration-300"
-                    >
-                      <Linkedin className="w-5 h-5 text-blue-600" />
-                    </a>
-                    <a
-                      href={member.social.twitter}
-                      className="w-10 h-10 bg-sky-100 rounded-full flex items-center justify-center hover:bg-sky-200 transition-colors duration-300"
-                    >
-                      <Twitter className="w-5 h-5 text-sky-600" />
-                    </a>
-                    <a
-                      href={`mailto:${member.social.email}`}
-                      className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors duration-300"
-                    >
-                      <Mail className="w-5 h-5 text-gray-600" />
-                    </a>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* Board of Directors */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-3xl p-12"
-        >
-          <h3 className="text-3xl font-bold text-center text-gray-900 mb-12">Board of Directors</h3>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {boardMembers.map((member, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow duration-300"
-              >
-                <h4 className="text-lg font-bold text-gray-900 mb-2">{member.name}</h4>
-                <p className="text-blue-600 font-semibold mb-2">{member.role}</p>
-                <p className="text-gray-600 text-sm">{member.expertise}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+                  {member.bio && <p className="text-gray-600 text-sm mt-4 leading-relaxed">{member.bio}</p>}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         {/* Join Our Team CTA */}
         <motion.div

@@ -1,77 +1,82 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { MapPin, Calendar, Heart } from "lucide-react"
+import { MapPin, Calendar, Heart, Loader2 } from "lucide-react"
+import Link from "next/link"
+import Image from "next/image"
+
+interface Child {
+  id: string
+  name: string
+  age: number
+  class?: string
+  bio?: string
+  location: string
+  needs: string[]
+  photo?: string
+  gallery: string[]
+  isActive: boolean
+  isSponsored: boolean
+  createdAt: string
+  updatedAt: string
+}
 
 export function BeneficiariesGrid() {
-  const beneficiaries = [
-    {
-      id: 1,
-      name: "Maria Santos",
-      age: 8,
-      location: "Guatemala",
-      image: "/placeholder.svg?height=300&width=300",
-      story: "Dreams of becoming a teacher to help other children in her village learn to read.",
-      needs: ["Education", "School Supplies"],
-      monthlySupport: "$35",
-      sponsored: false,
-    },
-    {
-      id: 2,
-      name: "Ahmed Hassan",
-      age: 12,
-      location: "Kenya",
-      image: "/placeholder.svg?height=300&width=300",
-      story: "Loves mathematics and wants to become an engineer to build better homes for his community.",
-      needs: ["Education", "Healthcare"],
-      monthlySupport: "$40",
-      sponsored: true,
-    },
-    {
-      id: 3,
-      name: "Priya Sharma",
-      age: 10,
-      location: "India",
-      image: "/placeholder.svg?height=300&width=300",
-      story: "Passionate about art and hopes to use creativity to bring joy to others.",
-      needs: ["Education", "Nutrition"],
-      monthlySupport: "$30",
-      sponsored: false,
-    },
-    {
-      id: 4,
-      name: "Carlos Rodriguez",
-      age: 9,
-      location: "Peru",
-      image: "/placeholder.svg?height=300&width=300",
-      story: "Enjoys helping his family farm and dreams of studying agriculture to improve crop yields.",
-      needs: ["Education", "Healthcare"],
-      monthlySupport: "$35",
-      sponsored: false,
-    },
-    {
-      id: 5,
-      name: "Fatima Al-Zahra",
-      age: 11,
-      location: "Morocco",
-      image: "/placeholder.svg?height=300&width=300",
-      story: "Loves reading and wants to become a doctor to help children in her community stay healthy.",
-      needs: ["Education", "Medical Care"],
-      monthlySupport: "$38",
-      sponsored: true,
-    },
-    {
-      id: 6,
-      name: "David Okonkwo",
-      age: 7,
-      location: "Nigeria",
-      image: "/placeholder.svg?height=300&width=300",
-      story: "Enjoys playing soccer and dreams of using sports to bring communities together.",
-      needs: ["Education", "Nutrition"],
-      monthlySupport: "$32",
-      sponsored: false,
-    },
-  ]
+  const [children, setChildren] = useState<Child[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetchChildren()
+  }, [])
+
+  const fetchChildren = async () => {
+    try {
+      const response = await fetch("/api/children/public")
+      if (!response.ok) {
+        throw new Error("Failed to fetch children")
+      }
+      const data = await response.json()
+      setChildren(data)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <section className="py-16 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex justify-center items-center min-h-[400px]">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+            <span className="ml-2 text-lg text-gray-600">Loading children...</span>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  if (error) {
+    return (
+      <section className="py-16 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center">
+            <p className="text-red-600 text-lg">Error: {error}</p>
+            <Button onClick={fetchChildren} className="mt-4">
+              Try Again
+            </Button>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  const availableChildren = children.filter((child) => child.isActive && !child.isSponsored)
 
   return (
     <section className="py-16 px-4">
@@ -84,69 +89,97 @@ export function BeneficiariesGrid() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {beneficiaries.map((child) => (
-            <Card key={child.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-              <div className="relative">
-                <img src={child.image || "/placeholder.svg"} alt={child.name} className="w-full h-64 object-cover" />
-                {child.sponsored && (
-                  <Badge className="absolute top-4 right-4 bg-green-500 hover:bg-green-600">Sponsored</Badge>
-                )}
-              </div>
-
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-xl font-bold text-gray-900">{child.name}</h3>
-                  <div className="flex items-center text-gray-500 text-sm">
-                    <Calendar className="h-4 w-4 mr-1" />
-                    {child.age} years old
-                  </div>
-                </div>
-
-                <div className="flex items-center text-gray-600 mb-4">
-                  <MapPin className="h-4 w-4 mr-1" />
-                  <span className="text-sm">{child.location}</span>
-                </div>
-
-                <p className="text-gray-700 mb-4 text-sm leading-relaxed">{child.story}</p>
-
-                <div className="mb-4">
-                  <p className="text-sm font-medium text-gray-700 mb-2">Primary Needs:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {child.needs.map((need, index) => (
-                      <Badge key={index} variant="secondary" className="text-xs">
-                        {need}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-4 border-t">
-                  <div>
-                    <p className="text-sm text-gray-600">Monthly Support</p>
-                    <p className="text-lg font-bold text-blue-600">{child.monthlySupport}</p>
-                  </div>
-
-                  {child.sponsored ? (
-                    <Button disabled className="bg-gray-300 text-gray-500">
-                      Already Sponsored
-                    </Button>
-                  ) : (
-                    <Button className="bg-blue-600 hover:bg-blue-700">
-                      <Heart className="mr-2 h-4 w-4" />
-                      Sponsor Now
-                    </Button>
+        {availableChildren.length === 0 ? (
+          <div className="text-center py-12">
+            <Heart className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-600 mb-2">No Children Available</h3>
+            <p className="text-gray-500">All children are currently sponsored. Check back soon!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {availableChildren.map((child) => (
+              <Card key={child.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                <div className="relative">
+                  <Image
+                    src={child.photo || "/placeholder.svg?height=300&width=300"}
+                    alt={child.name}
+                    width={300}
+                    height={300}
+                    className="w-full h-64 object-cover"
+                  />
+                  {child.isSponsored && (
+                    <Badge className="absolute top-4 right-4 bg-green-500 hover:bg-green-600">Sponsored</Badge>
                   )}
                 </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-xl font-bold text-gray-900">{child.name}</h3>
+                    <div className="flex items-center text-gray-500 text-sm">
+                      <Calendar className="h-4 w-4 mr-1" />
+                      {child.age} years old
+                    </div>
+                  </div>
+
+                  <div className="flex items-center text-gray-600 mb-4">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    <span className="text-sm">{child.location}</span>
+                  </div>
+
+                  {child.class && (
+                    <div className="mb-3">
+                      <span className="text-sm text-gray-600">Class: </span>
+                      <span className="text-sm font-medium text-gray-800">{child.class}</span>
+                    </div>
+                  )}
+
+                  <p className="text-gray-700 mb-4 text-sm leading-relaxed line-clamp-3">
+                    {child.bio || "A wonderful child waiting for your support to achieve their dreams."}
+                  </p>
+
+                  {child.needs.length > 0 && (
+                    <div className="mb-4">
+                      <p className="text-sm font-medium text-gray-700 mb-2">Primary Needs:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {child.needs.slice(0, 3).map((need, index) => (
+                          <Badge key={index} variant="secondary" className="text-xs">
+                            {need}
+                          </Badge>
+                        ))}
+                        {child.needs.length > 3 && (
+                          <Badge variant="secondary" className="text-xs">
+                            +{child.needs.length - 3} more
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex gap-2 pt-4 border-t">
+                    <Link href={`/children/${child.id}`} className="flex-1">
+                      <Button variant="outline" className="w-full">
+                        Learn More
+                      </Button>
+                    </Link>
+                    <Link href={`/sponsor/${child.id}`} className="flex-1">
+                      <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                        <Heart className="mr-2 h-4 w-4" />
+                        Sponsor
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
 
         <div className="text-center mt-12">
-          <Button variant="outline" size="lg" className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
-            View More Children
-          </Button>
+          <Link href="/beneficiaries">
+            <Button variant="outline" size="lg" className="bg-white text-gray-700 border-gray-300 hover:bg-gray-50">
+              View All Children
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
