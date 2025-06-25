@@ -114,13 +114,13 @@ export function WebsiteHeader() {
                 </div>
               </div>
 
-              <Link
+              {/* <Link
                 href="/children"
                 className="text-gray-700 hover:text-pink-600 font-medium transition-colors duration-200 relative group"
               >
                 Children
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-pink-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
-              </Link>
+              </Link> */}
 
               <Link
                 href="/beneficiaries"
