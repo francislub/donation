@@ -1,9 +1,32 @@
-'use client'
+"use client"
 
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Heart, Users, BookOpen, ArrowRight } from 'lucide-react'
+import { Heart, Users, BookOpen, ArrowRight } from "lucide-react"
 
 export function CallToAction() {
+  const router = useRouter()
+
+  const handleSponsorClick = () => {
+    router.push("/children?filter=available")
+  }
+
+  const handleBrowseClick = () => {
+    router.push("/children")
+  }
+
+  const handleDonateClick = () => {
+    router.push("/donate")
+  }
+
+  const handleVolunteerClick = () => {
+    router.push("/volunteer")
+  }
+
+  const handleFundraiseClick = () => {
+    router.push("/fundraise")
+  }
+
   return (
     <section className="py-20 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 relative overflow-hidden">
       {/* Background Pattern */}
@@ -16,11 +39,10 @@ export function CallToAction() {
 
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Ready to Change a Life?
-          </h2>
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Change a Life?</h2>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">
-            Your support can transform a child's future. Join thousands of sponsors who are already making a difference in children's lives around the world.
+            Your support can transform a child's future. Join thousands of sponsors who are already making a difference
+            in children's lives around the world.
           </p>
         </div>
 
@@ -52,26 +74,26 @@ export function CallToAction() {
         {/* Main CTA */}
         <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 md:p-12 max-w-4xl mx-auto">
           <div className="text-center mb-8">
-            <h3 className="text-3xl font-bold text-white mb-4">
-              Start Your Sponsorship Journey Today
-            </h3>
+            <h3 className="text-3xl font-bold text-white mb-4">Start Your Sponsorship Journey Today</h3>
             <p className="text-lg text-blue-100 mb-6">
               For just $35 a month, you can provide a child with education, healthcare, and hope for a brighter future.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
+              onClick={handleSponsorClick}
               className="bg-white text-blue-600 hover:bg-blue-50 px-8 py-4 text-lg font-semibold group"
             >
               Sponsor a Child Now
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold"
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={handleBrowseClick}
+              className="border-white text-blue-800 hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold"
             >
               Browse Children
             </Button>
@@ -86,25 +108,26 @@ export function CallToAction() {
 
         {/* Secondary Actions */}
         <div className="mt-12 text-center">
-          <p className="text-blue-100 mb-4">
-            Not ready to sponsor? There are other ways to help:
-          </p>
+          <p className="text-blue-100 mb-4">Not ready to sponsor? There are other ways to help:</p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Button 
-              variant="outline" 
-              className="border-white/50 text-white hover:bg-white/10"
+            <Button
+              variant="outline"
+              onClick={handleDonateClick}
+              className="border-white/50 text-blue-800 hover:bg-white/10"
             >
               Make a Donation
             </Button>
-            <Button 
-              variant="outline" 
-              className="border-white/50 text-white hover:bg-white/10"
+            <Button
+              variant="outline"
+              onClick={handleVolunteerClick}
+              className="border-white/50 text-blue-800 hover:bg-white/10"
             >
               Volunteer
             </Button>
-            <Button 
-              variant="outline" 
-              className="border-white/50 text-white hover:bg-white/10"
+            <Button
+              variant="outline"
+              onClick={handleFundraiseClick}
+              className="border-white/50 text-blue-800 hover:bg-white/10"
             >
               Fundraise
             </Button>

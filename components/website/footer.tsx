@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Heart, Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin, ArrowRight } from 'lucide-react'
+import { Heart, Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
@@ -21,20 +21,32 @@ export function WebsiteFooter() {
               </div>
             </div>
             <p className="text-gray-300 mb-6 leading-relaxed">
-              Empowering children through education and creating lasting change in communities worldwide. 
-              Join us in building a brighter future for those who need it most.
+              Empowering children through education and creating lasting change in communities worldwide. Join us in
+              building a brighter future for those who need it most.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-pink-600 transition-colors">
+              <a
+                href="#"
+                className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-pink-600 transition-colors"
+              >
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-pink-600 transition-colors">
+              <a
+                href="#"
+                className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-pink-600 transition-colors"
+              >
                 <Twitter className="h-5 w-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-pink-600 transition-colors">
+              <a
+                href="#"
+                className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-pink-600 transition-colors"
+              >
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-pink-600 transition-colors">
+              <a
+                href="#"
+                className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-pink-600 transition-colors"
+              >
                 <Youtube className="h-5 w-5" />
               </a>
             </div>
@@ -46,11 +58,11 @@ export function WebsiteFooter() {
             <ul className="space-y-3">
               {[
                 { name: "About Us", href: "/about" },
-                { name: "Our Mission", href: "/about#mission" },
-                { name: "Our Impact", href: "/about#impact" },
-                { name: "Success Stories", href: "/stories" },
+                { name: "Our Story", href: "/about/story" },
+                { name: "Our Mission", href: "/about/mission" },
+                { name: "Our Impact", href: "/about/impact" },
+                { name: "Our Team", href: "/about/team" },
                 { name: "Annual Reports", href: "/reports" },
-                { name: "Careers", href: "/careers" },
               ].map((link) => (
                 <li key={link.name}>
                   <Link
@@ -70,7 +82,7 @@ export function WebsiteFooter() {
             <h4 className="text-lg font-semibold mb-6">Get Involved</h4>
             <ul className="space-y-3">
               {[
-                { name: "Sponsor a Child", href: "/sponsor" },
+                { name: "Sponsor a Child", href: "/children?filter=available" },
                 { name: "Make a Donation", href: "/donate" },
                 { name: "Volunteer", href: "/volunteer" },
                 { name: "Corporate Partnership", href: "/partnership" },
@@ -104,7 +116,11 @@ export function WebsiteFooter() {
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin className="h-5 w-5 text-pink-400 mt-1" />
-                <span className="text-gray-300">123 Hope Street<br />New York, NY 10001</span>
+                <span className="text-gray-300">
+                  123 Hope Street
+                  <br />
+                  New York, NY 10001
+                </span>
               </div>
             </div>
 
@@ -132,9 +148,14 @@ export function WebsiteFooter() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-sm text-gray-300">
-              © 2024 Hope Foundation. All rights reserved. | 
-              <Link href="/privacy" className="hover:text-pink-400 ml-1">Privacy Policy</Link> | 
-              <Link href="/terms" className="hover:text-pink-400 ml-1">Terms of Service</Link>
+              © 2025 Hope Foundation. All rights reserved. |
+              <Link href="/privacy" className="hover:text-pink-400 ml-1">
+                Privacy Policy
+              </Link>{" "}
+              |
+              <Link href="/terms" className="hover:text-pink-400 ml-1">
+                Terms of Service
+              </Link>
             </div>
             <div className="flex items-center space-x-4 text-sm text-gray-300">
               <span>🌟 Charity Navigator 4-Star Rating</span>

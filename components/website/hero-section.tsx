@@ -1,36 +1,41 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Heart, Play, ArrowRight, Users, Globe, Award } from 'lucide-react'
+import { Heart, Play, ArrowRight, Users, Globe, Award } from "lucide-react"
 import Image from "next/image"
 
 const heroSlides = [
   {
     title: "Transform a Child's Future",
     subtitle: "Through Education",
-    description: "Join thousands of sponsors who are making a lasting impact on children's lives through quality education and support.",
+    description:
+      "Join thousands of sponsors who are making a lasting impact on children's lives through quality education and support.",
     image: "https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=1200&h=800&fit=crop",
-    stats: { children: "2,500+", countries: "15", years: "10+" }
+    stats: { children: "2,500+", countries: "15", years: "10+" },
   },
   {
     title: "Every Child Deserves",
     subtitle: "A Chance to Learn",
-    description: "Your sponsorship provides school supplies, uniforms, meals, and the foundation for a brighter tomorrow.",
+    description:
+      "Your sponsorship provides school supplies, uniforms, meals, and the foundation for a brighter tomorrow.",
     image: "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?w=1200&h=800&fit=crop",
-    stats: { children: "2,500+", countries: "15", years: "10+" }
+    stats: { children: "2,500+", countries: "15", years: "10+" },
   },
   {
     title: "Building Communities",
     subtitle: "One Child at a Time",
-    description: "Together, we're not just changing individual lives – we're transforming entire communities through education.",
+    description:
+      "Together, we're not just changing individual lives – we're transforming entire communities through education.",
     image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&h=800&fit=crop",
-    stats: { children: "2,500+", countries: "15", years: "10+" }
-  }
+    stats: { children: "2,500+", countries: "15", years: "10+" },
+  },
 ]
 
 export function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0)
+  const router = useRouter()
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -40,6 +45,18 @@ export function HeroSection() {
   }, [])
 
   const currentHero = heroSlides[currentSlide]
+
+  const handleSponsorClick = () => {
+    router.push("/children?filter=available")
+  }
+
+  const handleWatchStoryClick = () => {
+    router.push("/about/story")
+  }
+
+  const handleStartSponsoringClick = () => {
+    router.push("/children?filter=available")
+  }
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -75,31 +92,31 @@ export function HeroSection() {
                 </div>
                 <span className="text-pink-400 font-semibold text-lg">Hope Foundation</span>
               </div>
-              
+
               <h1 className="text-5xl md:text-7xl font-bold leading-tight">
                 <span className="block">{currentHero.title}</span>
                 <span className="block gradient-text">{currentHero.subtitle}</span>
               </h1>
-              
-              <p className="text-xl md:text-2xl text-gray-200 leading-relaxed max-w-2xl">
-                {currentHero.description}
-              </p>
+
+              <p className="text-xl md:text-2xl text-gray-200 leading-relaxed max-w-2xl">{currentHero.description}</p>
             </div>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
+                onClick={handleSponsorClick}
                 className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 text-lg px-8 py-6"
               >
                 <Heart className="mr-2 h-5 w-5" />
                 Sponsor a Child
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              
-              <Button 
-                size="lg" 
-                variant="outline" 
+
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={handleWatchStoryClick}
                 className="border-2 border-white text-white hover:bg-white hover:text-gray-900 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 text-lg px-8 py-6"
               >
                 <Play className="mr-2 h-5 w-5" />
@@ -136,7 +153,7 @@ export function HeroSection() {
                       <Award className="h-6 w-6 text-white" />
                     </div>
                   </div>
-                  
+
                   <div className="space-y-4">
                     <div className="flex items-center justify-between text-white">
                       <span>$50/month</span>
@@ -151,8 +168,11 @@ export function HeroSection() {
                       <span className="text-blue-400 font-semibold">School Supplies</span>
                     </div>
                   </div>
-                  
-                  <Button className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white shadow-lg">
+
+                  <Button
+                    onClick={handleStartSponsoringClick}
+                    className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white shadow-lg"
+                  >
                     Start Sponsoring Today
                   </Button>
                 </div>
@@ -162,7 +182,7 @@ export function HeroSection() {
               <div className="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl animate-float">
                 <Users className="h-8 w-8 text-white" />
               </div>
-              
+
               <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-xl animate-float-delayed">
                 <Globe className="h-6 w-6 text-white" />
               </div>
@@ -179,9 +199,7 @@ export function HeroSection() {
               key={index}
               onClick={() => setCurrentSlide(index)}
               className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                index === currentSlide 
-                  ? "bg-pink-500 w-8" 
-                  : "bg-white/50 hover:bg-white/70"
+                index === currentSlide ? "bg-pink-500 w-8" : "bg-white/50 hover:bg-white/70"
               }`}
             />
           ))}

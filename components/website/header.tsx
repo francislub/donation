@@ -87,25 +87,25 @@ export function WebsiteHeader() {
                 <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                   <div className="py-2">
                     <Link
-                      href="/about"
+                      href="/about/story"
                       className="block px-4 py-2 text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors duration-200"
                     >
                       Our Story
                     </Link>
                     <Link
-                      href="/about#mission"
+                      href="/about/mission"
                       className="block px-4 py-2 text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors duration-200"
                     >
                       Our Mission
                     </Link>
                     <Link
-                      href="/about#impact"
+                      href="/about/impact"
                       className="block px-4 py-2 text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors duration-200"
                     >
                       Our Impact
                     </Link>
                     <Link
-                      href="/about#team"
+                      href="/about/team"
                       className="block px-4 py-2 text-gray-700 hover:text-pink-600 hover:bg-pink-50 transition-colors duration-200"
                     >
                       Our Team
@@ -113,6 +113,14 @@ export function WebsiteHeader() {
                   </div>
                 </div>
               </div>
+
+              <Link
+                href="/children"
+                className="text-gray-700 hover:text-pink-600 font-medium transition-colors duration-200 relative group"
+              >
+                Children
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-pink-600 to-purple-600 group-hover:w-full transition-all duration-300"></span>
+              </Link>
 
               <Link
                 href="/beneficiaries"
@@ -134,7 +142,7 @@ export function WebsiteHeader() {
             {/* CTA Buttons */}
             <div className="hidden lg:flex items-center space-x-4">
               <Link
-                href="/beneficiaries"
+                href="/children"
                 className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white px-6 py-2.5 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
               >
                 <Heart className="inline-block mr-2 h-4 w-4" />
@@ -178,34 +186,41 @@ export function WebsiteHeader() {
               <div className="space-y-2">
                 <p className="text-gray-900 font-medium">About Us</p>
                 <Link
-                  href="/about#story"
+                  href="/about/story"
                   className="block text-gray-600 hover:text-pink-600 py-1 pl-4 transition-colors duration-200"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Our Story
                 </Link>
                 <Link
-                  href="/about#mission"
+                  href="/about/mission"
                   className="block text-gray-600 hover:text-pink-600 py-1 pl-4 transition-colors duration-200"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Our Mission
                 </Link>
                 <Link
-                  href="/about#impact"
+                  href="/about/impact"
                   className="block text-gray-600 hover:text-pink-600 py-1 pl-4 transition-colors duration-200"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Our Impact
                 </Link>
                 <Link
-                  href="/about#team"
+                  href="/about/team"
                   className="block text-gray-600 hover:text-pink-600 py-1 pl-4 transition-colors duration-200"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Our Team
                 </Link>
               </div>
+              {/* <Link
+                href="/children"
+                className="block text-gray-700 hover:text-pink-600 font-medium py-2 transition-colors duration-200"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Children
+              </Link> */}
               <Link
                 href="/beneficiaries"
                 className="block text-gray-700 hover:text-pink-600 font-medium py-2 transition-colors duration-200"
@@ -222,7 +237,7 @@ export function WebsiteHeader() {
               </Link>
               <div className="pt-4 space-y-3">
                 <Link
-                  href="/beneficiaries"
+                  href="/children"
                   className="block w-full bg-gradient-to-r from-pink-600 to-purple-600 text-white text-center px-6 py-3 rounded-xl font-semibold shadow-lg"
                   onClick={() => setIsMenuOpen(false)}
                 >

@@ -1,92 +1,46 @@
 "use client"
 
-import { useState } from "react"
-import { Heart, MapPin, Calendar, BookOpen, ChevronLeft, ChevronRight } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Heart, MapPin, Calendar, BookOpen, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
+import Link from "next/link"
 
-const children = [
-  {
-    id: 1,
-    name: "Maria Santos",
-    age: 8,
-    location: "Guatemala",
-    school: "Elementary School",
-    grade: "3rd Grade",
-    story: "Maria dreams of becoming a teacher to help other children in her community learn to read and write.",
-    image: "/placeholder.svg?height=400&width=300",
-    needs: ["School supplies", "Uniform", "Books"],
-    monthlySupport: 35,
-    sponsored: false,
-  },
-  {
-    id: 2,
-    name: "James Ochieng",
-    age: 12,
-    location: "Kenya",
-    school: "Primary School",
-    grade: "6th Grade",
-    story: "James loves mathematics and science. He wants to become an engineer to build better roads in his village.",
-    image: "/placeholder.svg?height=400&width=300",
-    needs: ["Tuition fees", "School meals", "Transportation"],
-    monthlySupport: 42,
-    sponsored: false,
-  },
-  {
-    id: 3,
-    name: "Priya Sharma",
-    age: 10,
-    location: "India",
-    school: "Community School",
-    grade: "4th Grade",
-    story: "Priya is passionate about art and wants to become a graphic designer to create beautiful things.",
-    image: "/placeholder.svg?height=400&width=300",
-    needs: ["Art supplies", "School fees", "Nutritious meals"],
-    monthlySupport: 28,
-    sponsored: false,
-  },
-  {
-    id: 4,
-    name: "Carlos Rodriguez",
-    age: 14,
-    location: "Peru",
-    school: "Secondary School",
-    grade: "8th Grade",
-    story: "Carlos excels in his studies and dreams of becoming a doctor to help people in rural communities.",
-    image: "/placeholder.svg?height=400&width=300",
-    needs: ["Medical books", "Lab equipment", "School uniform"],
-    monthlySupport: 48,
-    sponsored: false,
-  },
-  {
-    id: 5,
-    name: "Fatima Al-Zahra",
-    age: 9,
-    location: "Morocco",
-    school: "Local School",
-    grade: "3rd Grade",
-    story: "Fatima loves reading and writing stories. She wants to become a journalist to tell important stories.",
-    image: "/placeholder.svg?height=400&width=300",
-    needs: ["Books", "Writing materials", "School bag"],
-    monthlySupport: 32,
-    sponsored: false,
-  },
-  {
-    id: 6,
-    name: "David Mwangi",
-    age: 11,
-    location: "Tanzania",
-    school: "Village School",
-    grade: "5th Grade",
-    story: "David is interested in technology and computers. He dreams of creating apps to help farmers.",
-    image: "/placeholder.svg?height=400&width=300",
-    needs: ["Computer access", "Technical books", "School supplies"],
-    monthlySupport: 38,
-    sponsored: false,
-  },
-]
+interface Child {
+  id: string
+  name: string
+  age: number
+  location: string
+  school: string
+  grade: string
+  story: string
+  image: string
+  needs: string[]
+  monthlySupport: number
+  sponsored: boolean
+}
 
 export function FeaturedChildren() {
+  const [children, setChildren] = useState<Child[]>([])
+  const [loading, setLoading] = useState(true)
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [selectedChild, setSelectedChild] = useState<(typeof children)[0] | null>(null)
+  const [selectedChild, setSelectedChild] = useState<Child | null>(null)
+
+  useEffect(() => {
+    const fetchChildren = async () => {
+      try {
+        const response = await fetch("/api/children/public?limit=6&featured=true")
+        if (response.ok) {
+          const data = await response.json()
+          setChildren(data)
+        }
+      } catch (error) {
+        console.error("Error fetching featured children:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchChildren()
+  }, [])
 
   const nextSlide = () => {
     setCurrentIndex((prev) => (prev + 1) % Math.ceil(children.length / 3))
@@ -97,6 +51,31 @@ export function FeaturedChildren() {
   }
 
   const visibleChildren = children.slice(currentIndex * 3, currentIndex * 3 + 3)
+
+  if (loading) {
+    return (
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="h-8 w-8 animate-spin text-pink-600" />
+            <span className="ml-2 text-gray-600">Loading featured children...</span>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  if (children.length === 0) {
+    return (
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <Heart className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-2xl font-bold text-gray-900 mb-2">No featured children available</h3>
+          <p className="text-gray-600">Check back soon for new children waiting for sponsors.</p>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section className="py-20 bg-white relative overflow-hidden">
@@ -140,14 +119,28 @@ export function FeaturedChildren() {
                 {/* Image */}
                 <div className="relative overflow-hidden">
                   <img
-                    src={child.image || "/placeholder.svg"}
+                    src={child.image || "/placeholder.svg?height=400&width=300"}
                     alt={child.name}
                     className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-sm font-semibold text-pink-600">
-                    ${child.monthlySupport}/month
+
+                  {/* Status Badge */}
+                  <div
+                    className={`absolute top-4 left-4 px-3 py-1 rounded-full text-sm font-semibold ${
+                      child.sponsored
+                        ? "bg-green-100 text-green-800 border border-green-200"
+                        : "bg-pink-100 text-pink-800 border border-pink-200"
+                    }`}
+                  >
+                    {child.sponsored ? "Sponsored" : "Available"}
                   </div>
+
+                  {!child.sponsored && (
+                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 text-sm font-semibold text-pink-600">
+                      ${child.monthlySupport}/month
+                    </div>
+                  )}
                 </div>
 
                 {/* Content */}
@@ -181,7 +174,7 @@ export function FeaturedChildren() {
                   <div className="mb-6">
                     <h4 className="text-sm font-semibold text-gray-900 mb-2">Current Needs:</h4>
                     <div className="flex flex-wrap gap-2">
-                      {child.needs.map((need, index) => (
+                      {child.needs.slice(0, 3).map((need, index) => (
                         <span
                           key={index}
                           className="px-3 py-1 bg-pink-50 text-pink-600 text-xs font-medium rounded-full"
@@ -194,10 +187,20 @@ export function FeaturedChildren() {
 
                   {/* CTA Buttons */}
                   <div className="flex flex-col gap-3">
-                    <button className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
-                      <Heart className="inline-block mr-2 h-4 w-4" />
-                      Sponsor {child.name}
-                    </button>
+                    {!child.sponsored ? (
+                      <Link
+                        href={`/sponsor/${child.id}`}
+                        className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-center"
+                      >
+                        <Heart className="inline-block mr-2 h-4 w-4" />
+                        Sponsor {child.name}
+                      </Link>
+                    ) : (
+                      <div className="w-full bg-green-100 text-green-800 py-3 rounded-xl font-semibold text-center border border-green-200">
+                        <Heart className="inline-block mr-2 h-4 w-4" />
+                        Sponsored
+                      </div>
+                    )}
                     <button
                       onClick={() => setSelectedChild(child)}
                       className="w-full border-2 border-gray-300 hover:border-pink-600 text-gray-700 hover:text-pink-600 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
@@ -211,33 +214,35 @@ export function FeaturedChildren() {
           </div>
 
           {/* Navigation */}
-          <div className="flex items-center justify-center space-x-4">
-            <button
-              onClick={prevSlide}
-              className="w-12 h-12 bg-white hover:bg-pink-50 rounded-full shadow-lg border border-gray-200 hover:border-pink-300 flex items-center justify-center transition-all duration-300 hover:scale-105"
-            >
-              <ChevronLeft className="h-5 w-5 text-gray-600" />
-            </button>
+          {children.length > 3 && (
+            <div className="flex items-center justify-center space-x-4">
+              <button
+                onClick={prevSlide}
+                className="w-12 h-12 bg-white hover:bg-pink-50 rounded-full shadow-lg border border-gray-200 hover:border-pink-300 flex items-center justify-center transition-all duration-300 hover:scale-105"
+              >
+                <ChevronLeft className="h-5 w-5 text-gray-600" />
+              </button>
 
-            <div className="flex space-x-2">
-              {Array.from({ length: Math.ceil(children.length / 3) }).map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentIndex(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === currentIndex ? "bg-pink-600 scale-125" : "bg-gray-300 hover:bg-pink-400"
-                  }`}
-                />
-              ))}
+              <div className="flex space-x-2">
+                {Array.from({ length: Math.ceil(children.length / 3) }).map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentIndex(index)}
+                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                      index === currentIndex ? "bg-pink-600 scale-125" : "bg-gray-300 hover:bg-pink-400"
+                    }`}
+                  />
+                ))}
+              </div>
+
+              <button
+                onClick={nextSlide}
+                className="w-12 h-12 bg-white hover:bg-pink-50 rounded-full shadow-lg border border-gray-200 hover:border-pink-300 flex items-center justify-center transition-all duration-300 hover:scale-105"
+              >
+                <ChevronRight className="h-5 w-5 text-gray-600" />
+              </button>
             </div>
-
-            <button
-              onClick={nextSlide}
-              className="w-12 h-12 bg-white hover:bg-pink-50 rounded-full shadow-lg border border-gray-200 hover:border-pink-300 flex items-center justify-center transition-all duration-300 hover:scale-105"
-            >
-              <ChevronRight className="h-5 w-5 text-gray-600" />
-            </button>
-          </div>
+          )}
         </div>
 
         {/* Bottom CTA */}
@@ -249,12 +254,18 @@ export function FeaturedChildren() {
               and interests.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+              <Link
+                href="/children"
+                className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+              >
                 View All Children
-              </button>
-              <button className="border-2 border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105">
+              </Link>
+              <Link
+                href="/children?filter=available"
+                className="border-2 border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
+              >
                 Find My Match
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -277,7 +288,7 @@ export function FeaturedChildren() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <img
-                  src={selectedChild.image || "/placeholder.svg"}
+                  src={selectedChild.image || "/placeholder.svg?height=400&width=300"}
                   alt={selectedChild.name}
                   className="w-full h-64 object-cover rounded-xl"
                 />
@@ -297,10 +308,12 @@ export function FeaturedChildren() {
                         {selectedChild.grade} at {selectedChild.school}
                       </p>
                     </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Monthly Support</h4>
-                      <p className="text-pink-600 font-bold">${selectedChild.monthlySupport}/month</p>
-                    </div>
+                    {!selectedChild.sponsored && (
+                      <div>
+                        <h4 className="font-semibold text-gray-900">Monthly Support</h4>
+                        <p className="text-pink-600 font-bold">${selectedChild.monthlySupport}/month</p>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -322,10 +335,20 @@ export function FeaturedChildren() {
               </div>
 
               <div className="mt-8 flex gap-4">
-                <button className="flex-1 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300">
-                  <Heart className="inline-block mr-2 h-4 w-4" />
-                  Sponsor {selectedChild.name}
-                </button>
+                {!selectedChild.sponsored ? (
+                  <Link
+                    href={`/sponsor/${selectedChild.id}`}
+                    className="flex-1 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 text-center"
+                  >
+                    <Heart className="inline-block mr-2 h-4 w-4" />
+                    Sponsor {selectedChild.name}
+                  </Link>
+                ) : (
+                  <div className="flex-1 bg-green-100 text-green-800 py-3 rounded-xl font-semibold text-center border border-green-200">
+                    <Heart className="inline-block mr-2 h-4 w-4" />
+                    Sponsored
+                  </div>
+                )}
                 <button
                   onClick={() => setSelectedChild(null)}
                   className="px-6 border-2 border-gray-300 hover:border-pink-600 text-gray-700 hover:text-pink-600 py-3 rounded-xl font-semibold transition-all duration-300"
