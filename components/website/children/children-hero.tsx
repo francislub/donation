@@ -105,7 +105,7 @@ export function ChildrenHero() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-2 border-white text-white hover:bg-white hover:text-gray-900 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 text-lg px-8 py-6"
+                className="border-2 border-white text-blue-800 hover:bg-white hover:text-gray-900 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 text-lg px-8 py-6"
               >
                 <Play className="mr-2 h-5 w-5" />
                 Our Story
