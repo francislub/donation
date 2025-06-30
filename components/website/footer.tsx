@@ -16,7 +16,7 @@ export function WebsiteFooter() {
                 <Heart className="h-7 w-7 text-white" />
               </div>
               <div>
-                <h3 className="text-xl font-bold">Hope Foundation</h3>
+                <h3 className="text-xl font-bold">Rwahumati Foundation</h3>
                 <p className="text-sm text-gray-300">Transforming Lives</p>
               </div>
             </div>
@@ -117,7 +117,7 @@ export function WebsiteFooter() {
               <div className="flex items-start space-x-3">
                 <MapPin className="h-5 w-5 text-pink-400 mt-1" />
                 <span className="text-gray-300">
-                  123 Hope Street
+                  123 Rwahumati Street
                   <br />
                   New York, NY 10001
                 </span>
@@ -148,7 +148,7 @@ export function WebsiteFooter() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-sm text-gray-300">
-              © 2025 Hope Foundation. All rights reserved. |
+              © 2025 Rwahumati Foundation. All rights reserved. |
               <Link href="/privacy" className="hover:text-pink-400 ml-1">
                 Privacy Policy
               </Link>{" "}

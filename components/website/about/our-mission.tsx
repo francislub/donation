@@ -52,10 +52,22 @@ export function OurMission() {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl font-bold text-gray-900 mb-6">Our Mission & Values</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-6">Our Mission</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            We are committed to creating lasting change through comprehensive support programs that address the
-            fundamental needs of children and communities worldwide.
+            Our mission is to connect compassionate donors with impactful causes, fostering a transparent and efficient platform for giving. We empower individuals and organizations to make a tangible difference in the world by simplifying the donation process and ensuring every contribution reaches its intended purpose.
+          </p>
+         
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-16"
+        >
+          <h2 className="text-4xl font-bold text-gray-900 mb-6">Our Vision</h2>
+          
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Our vision is a future where philanthropy is accessible, collaborative, and transformative for all. We aspire to be the leading digital destination for charitable giving, building a global community of engaged donors and thriving initiatives that create lasting positive change.
           </p>
         </motion.div>
 

@@ -75,7 +75,7 @@ export function ChildrenHero() {
               <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
                 <Heart className="h-6 w-6 text-white" />
               </div>
-              <span className="text-pink-400 font-semibold text-lg">Hope Foundation</span>
+              <span className="text-pink-400 font-semibold text-lg">Rwahumati Foundation</span>
             </div>
 
             <h1 className="text-5xl md:text-7xl font-bold leading-tight">

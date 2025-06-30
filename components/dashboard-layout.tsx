@@ -207,7 +207,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                     <Heart className="size-4" />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-bold text-white">Hope Foundation</span>
+                    <span className="truncate font-bold text-white">Rwahumati Foundation</span>
                     <span className="truncate text-xs text-gray-300">Admin Dashboard</span>
                   </div>
                   <Badge variant="secondary" className="bg-green-500/20 text-green-300 border-green-400/30">
